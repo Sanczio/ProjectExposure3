@@ -321,8 +321,13 @@ public class ScriptCivilCar : MonoBehaviour {
 	}
 
 	public void FollowPlayer(Vector3 playerPosition)
-	{
-		_agent.SetDestination(playerPosition);
+	{   
+        if (_agent.enabled)
+        {
+            _agent.SetDestination(playerPosition);
+        }
+
+		
 	}
 
 	public void setFollowing(bool status)

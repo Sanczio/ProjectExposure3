@@ -150,7 +150,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 			if (BottomRegion.Contains (controlVector) && Input.GetMouseButton(0)) { // && Input.GetMouseButton(0) 
 				smallCircle.transform.position = controlVector;
 				pressedMouse = true;
-				Debug.Log (BottomRegion.x + "  " + BottomRegion.width / 2+" "+controlVector.y);
+				//Debug.Log (BottomRegion.x + "  " + BottomRegion.width / 2+" "+controlVector.y);
 				forceRotation = (BottomRegion.x + BottomRegion.width / 2) - controlVector.x;
 				forceRotation = -forceRotation / BottomRegion.width * rotationScale;
 				forceSpeed = (BottomRegion.y + BottomRegion.height / 2) - controlVector.y;
@@ -180,7 +180,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 				forceRotation = -forceRotation / controlVector.x * rotationScale;
 				forceSpeed = (BottomRegion.y + BottomRegion.height / 2) - controlVector.y;
 				forceSpeed = -forceSpeed / controlVector.y * speedScale;
-				Debug.Log (forceSpeed + " " + forceRotation);
+				//Debug.Log (forceSpeed + " " + forceRotation);
 			}
 
 
