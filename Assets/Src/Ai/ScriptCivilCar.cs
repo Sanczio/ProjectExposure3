@@ -315,8 +315,11 @@ public class ScriptCivilCar : MonoBehaviour {
 
 	public void GetBackToWaypoint()
 	{
+        if (_currentWaypoint)
+        {
 
-		_agent.SetDestination(_currentWaypoint.transform.position);
+            _agent.SetDestination(_currentWaypoint.transform.position);
+        }
 
 	}
 
