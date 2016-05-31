@@ -25,6 +25,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 	private GameObject tempTrash;
 	private ScriptSettingsControls controlSettings;
 	private ScriptBuildController buildControllerScript;
+	private ScriptPlayerHUD hud;
 
 	private Rigidbody playerRigidbody;
 	private bool setvelocityZeto = true;
@@ -54,7 +55,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 
 	WheelCollider WheelL ;
 	WheelCollider WheelR ;
-	float AntiRoll = 15000.0f;
+	float AntiRoll = 80000.0f;
 	//Touch
 	private Touch lastControlTouch;
 	private Touch lastScreenTouch;
@@ -65,6 +66,12 @@ public class ScriptPlayerControls : MonoBehaviour {
 
 		controlSettings = GameObject.Find ("Root").GetComponent<ScriptSettingsControls> ();
 		buildControllerScript = GameObject.Find ("Root").GetComponent<ScriptBuildController> ();
+		hud = GameObject.Find ("Root").GetComponent<ScriptPlayerHUD> ();
+
+		ScriptTrashController trashContr = GameObject.Find ("Root").GetComponent<ScriptTrashController> (); // test
+		trashContr.spawnTrash ("trash1", "recycable_trash_pos_1", "a"); // test
+		trashContr.spawnTrash ("trash2", "recycable_trash_pos_3", "b"); // test
+		trashContr.spawnTrash ("trash3", "recycable_trash_pos_2", "d"); // test
 
 		smallCircle = GameObject.Find ("smallCircle");
 		controller = GameObject.Find ("Joystick").GetComponent<Button> ();
@@ -82,7 +89,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 		AxleInfo front = new AxleInfo ();
 		front.leftWheel = GameObject.Find ("frontLeft").GetComponent<WheelCollider> ();
 		front.rightWheel = GameObject.Find ("frontRight").GetComponent<WheelCollider> ();
-		front.motor = true;
+		//front.motor = true;
 		front.steering = true;
 		AxleInfo back = new AxleInfo ();
 		back.rightWheel = GameObject.Find ("backRight").GetComponent<WheelCollider> ();
@@ -92,20 +99,18 @@ public class ScriptPlayerControls : MonoBehaviour {
 		axleInfos.Add (front);
 		axleInfos.Add (back);
 
-		foreach (AxleInfo axleInfo in axleInfos) {
-			//axleInfo.leftWheel.suspensionSpring.damper = 3000;
-			//axleInfos.rightWheel;
-			//axleInfos.rightWheel.
-		//axleInfos [0].rightWheel.forwardFriction.asymptoteSlip;
-		}
+
 	}
 		
 	void Update()
 	{
 
 
-
-		if ( Input.GetKeyDown(KeyCode.P))
+		if (Input.GetKeyDown (KeyCode.N))
+			hud.SpawnText ("ssssssssss", 10);
+		if (Input.GetKeyDown (KeyCode.M))
+			hud.SpawnImage ("tutorial_image_1", 10);
+		if (Input.GetKeyDown (KeyCode.P))
 			trashCollectedRecy[0] += 1;
 		if ( Input.GetKeyDown(KeyCode.L))
 			trashCollectedRecy[1] += 1;
@@ -160,10 +165,11 @@ public class ScriptPlayerControls : MonoBehaviour {
 				Vector3 velocity = playerRigidbody.velocity; // get speed in world place ( velocity )
 				Vector3 localVel = transform.InverseTransformDirection (velocity); // transform to local space so we know our velocity in relation to our orientation 
 
-				if (localVel.z > 0 && forceSpeed < 0.01f) { // velocity moving u forward and u say to move back
+			
+				if (localVel.z > 0 && forceSpeed < 0.05f) { // velocity moving u forward and u say to move back
 					braking = true;
 				} 
-				if ( localVel.z < 0 && forceSpeed > 0.01f){ //velocity  moving u backwards and u say to move forward
+				if ( localVel.z < 0 && forceSpeed > 0.05f){ //velocity  moving u backwards and u say to move forward
 					braking = true;
 				}
 				tempRot = forceRotation;
@@ -174,12 +180,12 @@ public class ScriptPlayerControls : MonoBehaviour {
 				braking = true; 
 				pressedMouse = false;
 			} else if (pressedMouse) {
-				//forceSpeed = tempSpeed;
-				//forceRotation = tempRot;
-				forceRotation = (BottomRegion.x + BottomRegion.width / 2) - controlVector.x;
+				forceRotation = (BottomRegion.x + BottomRegion.width / 2 ) - controlVector.x;
 				forceRotation = -forceRotation / controlVector.x * rotationScale;
 				forceSpeed = (BottomRegion.y + BottomRegion.height / 2) - controlVector.y;
 				forceSpeed = -forceSpeed / controlVector.y * speedScale;
+				forceSpeed = Mathf.Clamp (forceSpeed, -1.0f, 1.0f);
+				forceRotation = Mathf.Clamp (forceRotation, -1.0f, 1.0f);
 				//Debug.Log (forceSpeed + " " + forceRotation);
 			}
 
@@ -213,7 +219,10 @@ public class ScriptPlayerControls : MonoBehaviour {
 					axleInfo.leftWheel.brakeTorque = 0;
 					axleInfo.rightWheel.brakeTorque = 0;
 				}
+					
 
+				ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+				ApplyLocalPositionToVisuals(axleInfo.rightWheel);
 
 				////////////
 				WheelHit hit ;
@@ -230,17 +239,16 @@ public class ScriptPlayerControls : MonoBehaviour {
 
 				float antiRollForce = (travelL - travelR) * AntiRoll;
 
+
 				if (groundedL)
 					playerRigidbody.AddForceAtPosition(axleInfo.leftWheel.transform.up * -antiRollForce, axleInfo.leftWheel.transform.position); 
 				if (groundedR)
 					playerRigidbody.AddForceAtPosition(axleInfo.rightWheel.transform.up * antiRollForce, axleInfo.rightWheel.transform.position); 
+				if ( groundedL == false && groundedR == false) {
+					playerRigidbody.AddForceAtPosition(axleInfo.leftWheel.transform.up * -100000, axleInfo.leftWheel.transform.position); 
+					playerRigidbody.AddForceAtPosition(axleInfo.rightWheel.transform.up * -100000, axleInfo.rightWheel.transform.position); 
+				}
 				/////////////////
-
-
-				ApplyLocalPositionToVisuals(axleInfo.leftWheel);
-				ApplyLocalPositionToVisuals(axleInfo.rightWheel);
-
-
 			}
 		}
 	}
@@ -273,7 +281,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 	public void boostPlayer(GameObject obj)
 	{
 		
-		playerRigidbody.AddForce (gameObject.transform.forward*boostSpeed,ForceMode.Impulse);// = motor * boostSpeed;
+		//playerRigidbody.AddForce (gameObject.transform.forward*boostSpeed,ForceMode.Impulse);// = motor * boostSpeed;
 			//axleInfo.leftWheel.motorTorque = motor * boostSpeed;
 			//axleInfo.rightWheel.motorTorque = motor * boostSpeed;
 
