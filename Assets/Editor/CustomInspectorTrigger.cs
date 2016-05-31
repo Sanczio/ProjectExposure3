@@ -60,12 +60,7 @@ public class CustomInspectorTrigger : Editor
         EditorGUILayout.Space();
         //Show type options
         ShowTypeOptions(targetTrigger);
-        //op = (OPTIONS)EditorGUILayout.EnumPopup("Primitive to create:", op);
-        //targetPlayer.speed = EditorGUILayout.Slider("Speed", targetPlayer.speed, 0, 100);
-        //targetTrigger._activeAfterDelay = EditorGUILayout.Slider("Delay", targetTrigger._activeAfterDelay, 0, 100);
-        //targetTrigger._activeAfterDelay = EditorGUILayout.EnumPopup("Trigger Type", targetTrigger._triggerTask, );
 
-        // Show default inspector property editor EditorGUILayout.EnumMaskPopup
        //DrawDefaultInspector();
     }
 
