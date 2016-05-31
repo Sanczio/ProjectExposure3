@@ -6,6 +6,7 @@ public class ScriptPickUpRunAway : MonoBehaviour {
     private NavMeshAgent _agent;
 	public int ID;
     public float _runAwayDistance = 1.0f;
+    public float _runToPlayerDistanc = 1.0f;
 	ScriptPlayerControls player;
 	ScriptTrashController trashController;
 
@@ -25,43 +26,56 @@ public class ScriptPickUpRunAway : MonoBehaviour {
 	
 	}
 
-    public void ActivatePickUp(Vector3 playerPosition)
+    public void ActivatePickUp(Transform playerPosition)
     {
-		if ( _agent != null && gameObject != null) 
-		_agent.destination = DecideWhereToGo (playerPosition);
+		if ( _agent != null && gameObject != null && _agent.enabled)
+        {
+            _agent.destination = DecideWhereToGo(playerPosition);
+        }
+		
     }
 
-    Vector3 DecideWhereToGo(Vector3 playerPosition)
-    { 
+    Vector3 DecideWhereToGo(Transform playerPosition)
+    {   
+        
+
 		Vector3 goalPosition ;
         Transform tempTransform = this.GetComponent<Transform>();
-        Vector3 normVector = -1 * (playerPosition - tempTransform.position);
-        goalPosition = tempTransform.position + normVector.normalized * _runAwayDistance;
-        return goalPosition;
+        float distancePlayerTrash = Vector3.Distance(tempTransform.position, playerPosition.position );
+        if (distancePlayerTrash <= _runToPlayerDistanc)
+        {
+            return playerPosition.position;
+        } else
+        {
+            Vector3 normVector = playerPosition.forward;//-1 * (playerPosition - tempTransform.position);
+            goalPosition = playerPosition.position + normVector.normalized * _runAwayDistance;
+            return goalPosition;
+        }
+        
     }
 
 	void OnTriggerEnter(Collider collider)
 	{
 		if (collider.gameObject.tag == "PlayerCrashCollider") {
-			ScriptTrashSpawnPoint spawnTempRecy = trashController.getRecySpawns () [ID].GetComponent<ScriptTrashSpawnPoint> ();
+			//ScriptTrashSpawnPoint spawnTempRecy = trashController.getRecySpawns () [ID].GetComponent<ScriptTrashSpawnPoint> ();
 			//ScriptTrashSpawnPoint spawnTempBio = trashController.getBioSpawns () [ID].GetComponent<ScriptTrashSpawnPoint> ();
 
-			if (gameObject.name == "recycable_trash_a(Clone)") {
+			if (collider.gameObject.name == "recycable_trash_a(Clone)") {
 				player.addTrash (1);
 				Destroy (gameObject);
-				spawnTempRecy.makeAvailable (true);
+				//spawnTempRecy.makeAvailable (true);
 			}
 			if (gameObject.name == "recycable_trash_b(Clone)") {
 				player.addTrash (2);
 				Destroy (gameObject);
-				spawnTempRecy.makeAvailable (true);
+				//spawnTempRecy.makeAvailable (true);
 			}
 			if (gameObject.name == "recycable_trash_c(Clone)") {
 				player.addTrash (3);
 				Destroy (gameObject);
-				spawnTempRecy.makeAvailable (true);
+				//spawnTempRecy.makeAvailable (true);
 			}
-			if (gameObject.name == "bio_trash(Clone)") {
+			if (gameObject.tag == "bio_trash") {
 				player.addTrash (0);
 				Destroy (gameObject);
 				//spawnTempBio.makeAvailable (true);

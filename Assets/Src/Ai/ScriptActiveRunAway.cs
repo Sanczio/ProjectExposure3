@@ -31,11 +31,26 @@ public class ScriptActiveRunAway : MonoBehaviour {
 
     }
 
+    void OnTriggerStay(Collider collidingObject)
+    {
+        if (collidingObject.tag == "bio_trash")
+        {
+            ActivatePickupRunAway(collidingObject);
+
+        }
+        if (collidingObject.tag == "recycable_trash")
+        {
+            ActivatePickupRunAway(collidingObject);
+
+        }
+
+    }
+
     void ActivatePickupRunAway(Collider targetObject)
     {
 		if ( targetObject.gameObject != null){
 			ScriptPickUpRunAway tempScript = targetObject.GetComponent<ScriptPickUpRunAway>();
-			tempScript.ActivatePickUp(_parent.transform.position);
+			tempScript.ActivatePickUp(_parent.transform);
 		} 
     }
 }

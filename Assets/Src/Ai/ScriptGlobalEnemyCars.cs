@@ -33,12 +33,16 @@ public class ScriptGlobalEnemyCars : MonoBehaviour {
 
     void SpawnEnemyCar()
     {
-        GameObject currentRoad = _simpleRoadList[GetRandomRoad()];
-        ScriptRoadSimple tempRoadScript = currentRoad.GetComponent<ScriptRoadSimple>();
-        GameObject tempWaypoint = tempRoadScript._listWaypointsRight[0];
-        GameObject spawnCar = Instantiate(_enemyCarPrefab, tempWaypoint.transform.position, Quaternion.identity) as GameObject;
-        ScriptCivilCar tempCarScript = spawnCar.GetComponent<ScriptCivilCar>();
-        tempCarScript.AfterSpawn(currentRoad, "Right");
+        if (_maxCarNumberReached != true)
+        {
+            GameObject currentRoad = _simpleRoadList[GetRandomRoad()];
+            ScriptRoadSimple tempRoadScript = currentRoad.GetComponent<ScriptRoadSimple>();
+            GameObject tempWaypoint = tempRoadScript._listWaypointsRight[0];
+            GameObject spawnCar = Instantiate(_enemyCarPrefab, tempWaypoint.transform.position, Quaternion.identity) as GameObject;
+            ScriptCivilCar tempCarScript = spawnCar.GetComponent<ScriptCivilCar>();
+            tempCarScript.AfterSpawn(currentRoad, "Right");
+        }
+        
 
     }
 
