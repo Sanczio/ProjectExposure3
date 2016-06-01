@@ -15,6 +15,7 @@ public class ScriptTrashController : MonoBehaviour {
 
 	private List<GameObject> recycable_spawns;
 	private List<GameObject> bio_spawns;
+	private List<GameObject> trash_onscene = new List<GameObject>();
 
 	private int recyTrashOnScene = 0;
 	private int bioTrashOnScene = 0;
@@ -27,9 +28,7 @@ public class ScriptTrashController : MonoBehaviour {
 		ScriptSettingsGameplay gameplaySettings = GameObject.Find ("Root").GetComponent<ScriptSettingsGameplay> ();
 		assignmentController = GameObject.Find ("Root").GetComponent<ScriptAssignmentController> ();
 
-		spawnIntervalBio = gameplaySettings.trash_spawnIntervalBio;
-		spawnIntervalRecycable = gameplaySettings.trash_spawnIntervalRecycable;
-		startSpawningTrashAfter = gameplaySettings.trash_startSpawningTrashAfter;
+
 
 		bio_spawn_prefab = (GameObject)Resources.Load("prefabs/bio_trash");
 		recycable_spawn_prefabs[0] = (GameObject)Resources.Load("prefabs/recycable_trash_a"); // 
@@ -38,18 +37,18 @@ public class ScriptTrashController : MonoBehaviour {
 
 
 		recycable_spawns = GameObject.FindGameObjectsWithTag ("recycable_spawn").ToList();
+		Debug.Log (recycable_spawns.Count);
 
 
-		//InvokeRepeating("SpawnBioTrash" , startSpawningTrashAfter ,spawnIntervalBio);
-		//InvokeRepeating ("SpawnRecycableTrash", startSpawningTrashAfter ,spawnIntervalRecycable);
 
 	}
 
 
 	public void spawnTrash ( string nameOfTrash , string nameOfSpawn , string typeOfTrash )
 	{
-		GameObject tempTrashObj;
+		GameObject tempTrashObj = recycable_spawns[0];
 		GameObject tempSpawnObj = recycable_spawns[0];
+
 
 		foreach (GameObject spawn in recycable_spawns) {
 			if (spawn.name == nameOfSpawn) {
@@ -62,20 +61,25 @@ public class ScriptTrashController : MonoBehaviour {
 		case "a":
 			tempTrashObj = (GameObject)Instantiate (recycable_spawn_prefabs [0], tempSpawnObj.transform.position, tempSpawnObj.transform.rotation);
 			tempTrashObj.name = nameOfTrash;
+			trash_onscene.Add (tempTrashObj);
 			break;
 		case "b":
 			tempTrashObj = (GameObject)Instantiate (recycable_spawn_prefabs [1], tempSpawnObj.transform.position, tempSpawnObj.transform.rotation);
 			tempTrashObj.name = nameOfTrash;
+			trash_onscene.Add (tempTrashObj);
 			break;
 		case "c":
 			tempTrashObj = (GameObject)Instantiate (recycable_spawn_prefabs [2], tempSpawnObj.transform.position, tempSpawnObj.transform.rotation);
 			tempTrashObj.name = nameOfTrash;
+			trash_onscene.Add (tempTrashObj);
 			break;
 		case "d":
 			tempTrashObj = (GameObject)Instantiate (bio_spawn_prefab, tempSpawnObj.transform.position, tempSpawnObj.transform.rotation);
 			tempTrashObj.name = nameOfTrash;
+			trash_onscene.Add (tempTrashObj);
 			break;
 		}
+
 	}
 
 
@@ -92,39 +96,7 @@ public class ScriptTrashController : MonoBehaviour {
 //			area = area_3;
 	}
 
-	void SpawnBioTrash()
-	{
-//		bio_spawns = area.getBioSpawns();
-//		int random = Random.Range (0, bio_spawns.Count );
-//
-//		ScriptTrashSpawnPoint spawnTemp = bio_spawns [random].GetComponent<ScriptTrashSpawnPoint> ();
-//		GameObject tempTrashObj;
-//		if (spawnTemp.checkIfAvailable ()) {
-//			tempTrashObj = (GameObject)Instantiate (bio_spawn_prefab, bio_spawns[random].transform.position, bio_spawns[random].transform.rotation);
-//			spawnTemp.makeAvailable (false);
-//			ScriptPickUpRunAway tempTrash = tempTrashObj.GetComponent<ScriptPickUpRunAway> ();
-//			tempTrash.ID = random;
-//		}
 
-
-	}
-
-	void SpawnRecycableTrash()
-	{
-//		recycable_spawns = area.getRecySpawns();
-//		int random = Random.Range (0, recycable_spawns.Count );
-//		int randomTrash = Random.Range (0, recycable_spawn_prefabs.Length);
-//
-//		ScriptTrashSpawnPoint spawnTemp = recycable_spawns [random].GetComponent<ScriptTrashSpawnPoint> ();
-//		GameObject tempTrashObj;
-//		if (spawnTemp.checkIfAvailable ()) {
-//			tempTrashObj = (GameObject)Instantiate (recycable_spawn_prefabs[randomTrash], recycable_spawns[random].transform.position, recycable_spawns[random].transform.rotation);
-//			spawnTemp.makeAvailable (false);
-//			ScriptPickUpRunAway tempTrash = tempTrashObj.GetComponent<ScriptPickUpRunAway> ();
-//			tempTrash.ID = random;
-//		}
-//			
-	}
 
 
 	public List<GameObject> getBioSpawns()
@@ -135,5 +107,13 @@ public class ScriptTrashController : MonoBehaviour {
 	public List<GameObject> getRecySpawns()
 	{
 		return recycable_spawns;
+	}
+	public List<GameObject> getTrashOnScene()
+	{
+		return trash_onscene;
+	}
+	public void removeTrash( GameObject trash )
+	{
+		trash_onscene.Remove (trash);
 	}
 }
