@@ -34,12 +34,16 @@ public class ScriptCivilCar : MonoBehaviour {
         //GetNextWaypoint();
     }
 
-    public void AfterSpawn(GameObject currentRoad, string direction)
+    public void AfterSpawn(GameObject currentRoad, string direction, bool activeAfterSpawn)
     {
         _currentRoad = currentRoad;
         _roadSide = direction;
-        GetRoadScript(_currentRoad);
-        GetNextWaypoint();
+        if (activeAfterSpawn)
+        {
+            GetRoadScript(_currentRoad);
+            GetNextWaypoint();
+        }
+        
 
     }
 

@@ -46,7 +46,7 @@ public class ScriptGlobalCivilCars : MonoBehaviour {
             GameObject tempWaypoint = tempRoadScript._listWaypointsRight[0];
             GameObject spawnCar = Instantiate(_carPrefab, tempWaypoint.transform.position, Quaternion.identity) as GameObject;
             ScriptCivilCar tempCarScript = spawnCar.GetComponent<ScriptCivilCar>();
-            tempCarScript.AfterSpawn(currentRoad, "Right");
+            //tempCarScript.AfterSpawn(currentRoad, "Right");
         }
 
         

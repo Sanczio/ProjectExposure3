@@ -84,10 +84,13 @@ public class CustomInspectorTrigger : Editor
                 //Car name
                 targetTrigger._carName = EditorGUILayout.TextField("Car name: ", targetTrigger._carName);
                 //patroling?
-                targetTrigger._patroling = EditorGUILayout.Toggle("Patroling: ", targetTrigger._patroling);
+                targetTrigger._carActiveAfterStart = EditorGUILayout.Toggle("Active after spawn: ", targetTrigger._carActiveAfterStart);
                 //Car type
                 targetTrigger._carTypeEnum = (ScriptTrigger.CarType)EditorGUILayout.EnumPopup("CarType: ", targetTrigger._carTypeEnum);
                 ShowCarType(targetTrigger);
+                //Road side
+                targetTrigger._carRoadSideEnum = (ScriptTrigger.CarRoadSide)EditorGUILayout.EnumPopup("Road Side: ", targetTrigger._carRoadSideEnum);
+                ShowCarRoadSide(targetTrigger);
                 //next trigger
                 targetTrigger._whereToSpawnCar = EditorGUILayout.TextField("Where to spawn: ", targetTrigger._whereToSpawnCar);
 
@@ -127,8 +130,38 @@ public class CustomInspectorTrigger : Editor
                 //time to smooth move
                 if (targetTrigger._smoothMoving) targetTrigger._timeToSmoothMove = EditorGUILayout.FloatField("Smooth moving time: ", targetTrigger._timeToSmoothMove);
                 break;
-            
+            case ScriptTrigger.TriggerType.ShowImage:
+                //Options for Show image
+                EditorGUILayout.LabelField("Options for show image", EditorStyles.boldLabel);
+                //Image name
+                targetTrigger._imageName = EditorGUILayout.TextField("Image name: ", targetTrigger._imageName);
+                //Image show time
+                targetTrigger._imageTime = EditorGUILayout.FloatField("Show time: ", targetTrigger._imageTime);
+                break;
+
+            case ScriptTrigger.TriggerType.ShowText:
+                //Options for show text
+                EditorGUILayout.LabelField("Options for showing test", EditorStyles.boldLabel);
+                //Text name
+                targetTrigger._textName = EditorGUILayout.TextField("Text name: ", targetTrigger._textName);
+                //Image show time
+                targetTrigger._textTime = EditorGUILayout.FloatField("Text show time: ", targetTrigger._textTime);
+                break;
         }
+    }
+
+    void ShowCarRoadSide(ScriptTrigger targetTrigger)
+    {
+        switch (targetTrigger._carRoadSideEnum)
+        {
+            case ScriptTrigger.CarRoadSide.Left:
+                targetTrigger._roadSide = "Left";
+                break;
+            case ScriptTrigger.CarRoadSide.Right:
+                targetTrigger._roadSide = "Right";
+                break;
+        }
+            
     }
 
     void ShowTrashType(ScriptTrigger targetTrigger)

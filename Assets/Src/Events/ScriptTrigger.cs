@@ -6,7 +6,7 @@ public class ScriptTrigger : MonoBehaviour {
     
     public enum TriggerType
     {
-        NULL, SpawnPickUp, SpawnCar, SpawnTrash, MoveObject
+        NULL, SpawnPickUp, SpawnCar, SpawnTrash, MoveObject, ShowText, ShowImage
     }
 
     public enum CarType
@@ -24,9 +24,15 @@ public class ScriptTrigger : MonoBehaviour {
         SpeedBoost, Shooting
     }
 
+    public enum CarRoadSide
+    {
+        Right, Left
+    }
+
     public CarType _carTypeEnum;
     public PickUpType _pickUpTypeEnum;
     public TrashType _trashTypeEnum;
+    public CarRoadSide _carRoadSideEnum;
 
 
     //public State pickUp = State.boost;
@@ -59,9 +65,12 @@ public class ScriptTrigger : MonoBehaviour {
 
     [Header("Trigger Car")]
     public string _carName;
-    public bool _patroling;
+    public bool _carActiveAfterStart;
     public string _carType;
     public string _whereToSpawnCar;
+    public string _roadSide;
+
+
 
     [Header("Trigger Trash")]
     public string _trashName;
@@ -73,8 +82,14 @@ public class ScriptTrigger : MonoBehaviour {
     public string _targetPlace;
     public bool _smoothMoving;
     public float _timeToSmoothMove = 0.0f;
-    [Header("Trigger Effects")]
-    private float temp2;
+
+    [Header("Trigger Show Image")]
+    public string _imageName;
+    public float _imageTime;
+
+    [Header("Trigger Show Text")]
+    public string _textName;
+    public float _textTime;
 
     private bool _triggerAlreadyActivated = false;
     
@@ -174,9 +189,27 @@ public class ScriptTrigger : MonoBehaviour {
             case TriggerType.MoveObject:
                 TriggerTaskMoveObject();
                 break;
-            
+            case TriggerType.ShowImage:
+                TriggerShowImage();
+                break;
+            case TriggerType.ShowText:
+                TriggerShowText();
+                break;
+
         }
         ActivateNextTrigger();
+    }
+
+    void TriggerShowImage()
+    {
+        ScriptPlayerHUD tempHud = GameObject.Find("Root").GetComponent<ScriptPlayerHUD>();
+        tempHud.SpawnImage(_imageName, _imageTime);
+    }
+
+    void TriggerShowText()
+    {
+        ScriptPlayerHUD tempHud = GameObject.Find("Root").GetComponent<ScriptPlayerHUD>();
+        tempHud.SpawnText(_textName, _textTime);
     }
 
     void TriggerTaskSpawnTrash()
@@ -203,8 +236,11 @@ public class ScriptTrigger : MonoBehaviour {
 
     void TriggerTaskSpawnCar()
     {
-        //SpawnCar?
+        ScriptCarSpawner tempCarSpawnerScript = GameObject.Find("Root").GetComponent<ScriptCarSpawner>();
+        tempCarSpawnerScript.CallCarSpawner(_carName, _carType, _whereToSpawnCar, _roadSide, _carActiveAfterStart);
     }
+
+
 
     void TriggerTaskSpawnPickUp()
     {

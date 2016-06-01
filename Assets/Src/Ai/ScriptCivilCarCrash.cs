@@ -15,10 +15,10 @@ public class ScriptCivilCarCrash : MonoBehaviour {
 
     void OnCollisionEnter(Collision otherObject)
     {
-        print(otherObject.gameObject.tag);
+        //print(otherObject.gameObject.tag);
         if (otherObject.gameObject.tag == "Player")
         {
-            print("Hit by player");
+            //print("Hit by player");
             _hitCount++;
             if (_hitCount == 1)
             { _carScript.StopAgentInCar(); }
