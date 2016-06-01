@@ -26,7 +26,7 @@ public class ScriptCameraControl : MonoBehaviour {
 
 	void Awake()
 	{
-		material = new Material (Shader.Find ("Hidden/grayscaleShader"));
+		//material = new Material (Shader.Find ("Hidden/grayscaleShader"));
 	}
 
 	void Start()

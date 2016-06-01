@@ -62,20 +62,20 @@ public class ScriptPickUpRunAway : MonoBehaviour {
 		if (collider.gameObject.tag == "PlayerCrashCollider") {
 			ScriptTrashController controller = GameObject.Find ("Root").GetComponent<ScriptTrashController> ();
 
-			if (collider.gameObject.name == "recycable_trash_a(Clone)") {
+			if (gameObject.tag == "recycable_trash_a") {
 				player.addTrash (1);
 				controller.removeTrash (gameObject);
 				Destroy (gameObject);
 
 				//spawnTempRecy.makeAvailable (true);
 			}
-			if (gameObject.name == "recycable_trash_b(Clone)") {
+			if (gameObject.tag == "recycable_trash_b") {
 				player.addTrash (2);
 				controller.removeTrash (gameObject);
 				Destroy (gameObject);
 				//spawnTempRecy.makeAvailable (true);
 			}
-			if (gameObject.name == "recycable_trash_c(Clone)") {
+			if (gameObject.tag == "recycable_trash_c") {
 				player.addTrash (3);
 				controller.removeTrash (gameObject);
 				Destroy (gameObject);
