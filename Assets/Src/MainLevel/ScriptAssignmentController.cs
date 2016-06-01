@@ -41,23 +41,26 @@ public class ScriptAssignmentController : MonoBehaviour {
 	private ScriptArea tutorial;
 
 	private int[] player_trash = {0,0,0,0}; // 1 - a trash ; 2 - b trash ; 3 - c trash , 0 - bio waste
-	private int[] time_limits = {70,80,120};
+	private int[] time_limits = new int[3];
 
 	void Start () {
 		hud = GameObject.Find ("Root").GetComponent<ScriptPlayerHUD> ();
 		canvas = GameObject.Find ("Canvas");
 		player = GameObject.Find ("Player").GetComponent<ScriptPlayerControls> ();
 		timer_text = GameObject.Find("timer_text").GetComponent<Text>();
-		trash_a_text = GameObject.Find("trash_a_text").GetComponent<Text>();
-		trash_b_text = GameObject.Find("trash_b_text").GetComponent<Text>();
-		trash_c_text = GameObject.Find("trash_c_text").GetComponent<Text>();
-		trash_bio_text = GameObject.Find("trash_bio_text").GetComponent<Text>();
-		tutorial = GameObject.Find ("Tutorial").GetComponent<ScriptArea> ();
-		area_1 = GameObject.Find ("Area1").GetComponent<ScriptArea> ();
-		area_2 = GameObject.Find ("Area2").GetComponent<ScriptArea> ();
-		area_3 = GameObject.Find ("Area3").GetComponent<ScriptArea> ();
+		//trash_a_text = GameObject.Find("trash_a_text").GetComponent<Text>();
+		//trash_b_text = GameObject.Find("trash_b_text").GetComponent<Text>();
+		//trash_c_text = GameObject.Find("trash_c_text").GetComponent<Text>();
+		//trash_bio_text = GameObject.Find("trash_bio_text").GetComponent<Text>();
+//		tutorial = GameObject.Find ("Tutorial").GetComponent<ScriptArea> ();
+//		area_1 = GameObject.Find ("Area1").GetComponent<ScriptArea> ();
+//		area_2 = GameObject.Find ("Area2").GetComponent<ScriptArea> ();
+//		area_3 = GameObject.Find ("Area3").GetComponent<ScriptArea> ();
 		gameplaySettings = GameObject.Find ("Root").GetComponent<ScriptSettingsGameplay> ();
-		//cameraScript = GameObject.Find ("Main Camera").GetComponent<ScriptCameraControl> ();
+
+		time_limits[0] = gameplaySettings.assignment_1_time;
+		time_limits[1] = gameplaySettings.assignment_2_time;
+		time_limits[2] = gameplaySettings.assignment_3_time;
 
 		assignment[0][0] = gameplaySettings.assignment0_a_trash;
 		assignment[0][1] = gameplaySettings.assignment0_b_trash;
@@ -82,10 +85,10 @@ public class ScriptAssignmentController : MonoBehaviour {
 		trash_b_prefab = (GameObject)Resources.Load("prefabs/CanvasPrefabs/trash_b_image");
 		trash_c_prefab = (GameObject)Resources.Load("prefabs/CanvasPrefabs/trash_c_image");
 
-		trash_a_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_a_text.gameObject.transform.position.y, 0);
-		trash_b_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_b_text.gameObject.transform.position.y, 0);
-		trash_c_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_c_text.gameObject.transform.position.y, 0);
-		trash_bio_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_bio_text.gameObject.transform.position.y, 0);
+//		trash_a_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_a_text.gameObject.transform.position.y, 0);
+//		trash_b_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_b_text.gameObject.transform.position.y, 0);
+//		trash_c_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_c_text.gameObject.transform.position.y, 0);
+//		trash_bio_text.gameObject.transform.position = new Vector3 (Screen.width / 10, trash_bio_text.gameObject.transform.position.y, 0);
 		timer_text.gameObject.transform.position = new Vector3 (timer_text.gameObject.transform.position.x, Screen.height / 8 * 7 , 0);
 
 		spawnImages ();
@@ -223,7 +226,7 @@ public class ScriptAssignmentController : MonoBehaviour {
 		//player_trash [3] = player.getRecycablesCollected (3);
 
 
-		trash_a_text.text = trash_b_text.text = trash_c_text.text = trash_bio_text.text = "";
+		//trash_a_text.text = trash_b_text.text = trash_c_text.text = trash_bio_text.text = "";
 		timer_text.text = Mathf.RoundToInt(time_left).ToString ()+" s left";
 		if ( time_left > 0 )
 			time_left -= Time.deltaTime;

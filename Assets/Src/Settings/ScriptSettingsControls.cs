@@ -16,10 +16,11 @@ public class ScriptSettingsControls : MonoBehaviour {
 	//--------CameraControlSettings-----END
 
 	//--------PlayerControlSettings-----START
-	public float player_speed = 4.5f;
-	public float player_angularspeed = 120;
-	public float player_acceleration = 8;
-	public float player_stopping_d = 0;
+	public float player_speed = 1600;
+	public float player_max_steering_angle = 35;
+	public float player_brake_force = 10000;
+	public float player_boost = 20;
+	public bool  player_touchscreen = false;
 
 
 	//--------PlayerControlSettings-----END
