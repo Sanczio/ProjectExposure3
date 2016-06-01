@@ -14,7 +14,7 @@ public class ScriptPickUp : MonoBehaviour {
 		player = GameObject.Find ("Player").GetComponent<ScriptPlayerControls> ();
 	}
 
-	void OnTriggerStay(Collider collider)
+	void OnTriggerEnter(Collider collider)
 	{
 		if (collider.gameObject.tag == "PlayerCrashCollider") {
 			switch (pickUp) {

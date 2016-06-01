@@ -24,7 +24,6 @@ public class ScriptPlayerControls : MonoBehaviour {
 	private string labelText = "";
 	private GameObject tempTrash;
 	private ScriptSettingsControls controlSettings;
-	private ScriptBuildController buildControllerScript;
 	private ScriptPlayerHUD hud;
 
 	private Rigidbody playerRigidbody;
@@ -38,18 +37,18 @@ public class ScriptPlayerControls : MonoBehaviour {
 	// Speeds
 	private float rotationScale = 2;
 	private float speedScale = 2;
-	public float boostSpeed = 1000;
+	private float boostSpeed ;
 
 	//Handling
 	private List<AxleInfo> axleInfos = new List<AxleInfo>(); 
-	public float maxMotorTorque;
-	public float maxSteeringAngle;
-	public float brakeForce;
+	private float maxMotorTorque;
+	private float maxSteeringAngle;
+	private float brakeForce;
 
-	public Vector3 centerOfMassCorrection;
+	private Vector3 centerOfMassCorrection = new Vector3 (0,-1,-1.5f);
 	//Internal
-	public bool controlled;
-	public bool touchScreen;
+	private bool controlled = true;
+	private bool touchScreen;
 	private bool braking;
 	private bool boost = false;
 
@@ -63,23 +62,21 @@ public class ScriptPlayerControls : MonoBehaviour {
 	void Start () {
 		playerRigidbody = GetComponent<Rigidbody> ();
 		GetComponent<Rigidbody>().centerOfMass = centerOfMassCorrection;
-
-		controlSettings = GameObject.Find ("Root").GetComponent<ScriptSettingsControls> ();
-		buildControllerScript = GameObject.Find ("Root").GetComponent<ScriptBuildController> ();
-		hud = GameObject.Find ("Root").GetComponent<ScriptPlayerHUD> ();
-
-		ScriptTrashController trashContr = GameObject.Find ("Root").GetComponent<ScriptTrashController> (); // test
-		trashContr.spawnTrash ("trash1", "recycable_trash_pos_1", "a"); // test
-		trashContr.spawnTrash ("trash2", "recycable_trash_pos_3", "b"); // test
-		trashContr.spawnTrash ("trash3", "recycable_trash_pos_2", "d"); // test
-
 		smallCircle = GameObject.Find ("smallCircle");
 		controller = GameObject.Find ("Joystick").GetComponent<Button> ();
-
-		//touchScreen = Input.multiTouchEnabled;
-		Debug.Log ("TouchEnabled: " + touchScreen);
+		controlSettings = GameObject.Find ("Root").GetComponent<ScriptSettingsControls> ();
+		hud = GameObject.Find ("Root").GetComponent<ScriptPlayerHUD> ();
 
 		tempCameraDistance = controlSettings.cam_distance_s;
+		boostSpeed = controlSettings.player_boost;
+		maxMotorTorque = controlSettings.player_speed ;
+		maxSteeringAngle = controlSettings.player_max_steering_angle;
+		brakeForce = controlSettings.player_brake_force;
+		touchScreen = controlSettings.player_touchscreen;
+
+
+
+
 
 		rt = controller.image.rectTransform; 
 		BottomRegion.width = rt.rect.width ;
@@ -104,8 +101,18 @@ public class ScriptPlayerControls : MonoBehaviour {
 		
 	void Update()
 	{
-
-
+		if (Input.GetKeyDown (KeyCode.V)) {
+			ScriptSlowMotion slow = GameObject.Find ("Root").GetComponent<ScriptSlowMotion> ();
+			slow.slowMotion (3, true, 0.1f);
+		}
+			
+		if (Input.GetKeyDown (KeyCode.B))
+		{
+			ScriptTrashController trashContr = GameObject.Find ("Root").GetComponent<ScriptTrashController> (); // test
+			trashContr.spawnTrash ("trash1", "recycable_trash_pos_1", "a"); // test
+			trashContr.spawnTrash ("trash2", "recycable_trash_pos_3", "b"); // test
+			trashContr.spawnTrash ("trash3", "recycable_trash_pos_2", "d"); // test
+		}
 		if (Input.GetKeyDown (KeyCode.N))
 			hud.SpawnText ("ssssssssss", 10);
 		if (Input.GetKeyDown (KeyCode.M))
@@ -117,13 +124,15 @@ public class ScriptPlayerControls : MonoBehaviour {
 		if ( Input.GetKeyDown(KeyCode.O))
 			trashCollectedRecy[2] += 1;
 
+
 		int nbTouches = Input.touchCount;
 		if (nbTouches > 0) {
 			for (int i = 0; i < nbTouches; i++) {
 				Touch touch = Input.GetTouch (i);
 				TouchPhase phase = touch.phase;
-				if (BottomRegion.Contains (new Vector2 (touch.position.x, touch.position.y ))  ) { // && phase == TouchPhase.Stationary
+				if (BottomRegion.Contains (new Vector2 (touch.position.x, touch.position.y ))  && phase == TouchPhase.Began) { // && phase == TouchPhase.Stationary
 					lastControlTouch = touch;
+					break;
 				}
 			}
 		}
@@ -276,6 +285,11 @@ public class ScriptPlayerControls : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (time);
 		boost = false;
+	}
+
+	public void setSpeed ( float speed )
+	{
+		maxMotorTorque = speed;
 	}
 
 	public void boostPlayer(GameObject obj)

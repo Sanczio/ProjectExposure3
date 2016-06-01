@@ -5,7 +5,7 @@ public class ScriptPickUpRunAway : MonoBehaviour {
 
     private NavMeshAgent _agent;
 	public int ID;
-    public float _runAwayDistance = 1.0f;
+	private float _runAwayDistance = 1.0f;
     public float _runToPlayerDistanc = 1.0f;
 	ScriptPlayerControls player;
 	ScriptTrashController trashController;
@@ -18,12 +18,15 @@ public class ScriptPickUpRunAway : MonoBehaviour {
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		player = GameObject.Find ("Player").GetComponent<ScriptPlayerControls> ();
 		trashController = GameObject.Find ("Root").GetComponent<ScriptTrashController> ();
+		ScriptSettingsGameplay settings = GameObject.Find ("Root").GetComponent<ScriptSettingsGameplay> ();
+		_runAwayDistance = settings.trash_escape_distance;
+		_agent.speed = settings.trash_escape_speed;
 
     }
 	
-	// Update is called once per frame
-	void Update () {
-	
+	public void setSpeed( float speed )
+	{
+		_agent.speed = speed;
 	}
 
     public void ActivatePickUp(Transform playerPosition)
@@ -57,26 +60,30 @@ public class ScriptPickUpRunAway : MonoBehaviour {
 	void OnTriggerEnter(Collider collider)
 	{
 		if (collider.gameObject.tag == "PlayerCrashCollider") {
-			//ScriptTrashSpawnPoint spawnTempRecy = trashController.getRecySpawns () [ID].GetComponent<ScriptTrashSpawnPoint> ();
-			//ScriptTrashSpawnPoint spawnTempBio = trashController.getBioSpawns () [ID].GetComponent<ScriptTrashSpawnPoint> ();
+			ScriptTrashController controller = GameObject.Find ("Root").GetComponent<ScriptTrashController> ();
 
 			if (collider.gameObject.name == "recycable_trash_a(Clone)") {
 				player.addTrash (1);
+				controller.removeTrash (gameObject);
 				Destroy (gameObject);
+
 				//spawnTempRecy.makeAvailable (true);
 			}
 			if (gameObject.name == "recycable_trash_b(Clone)") {
 				player.addTrash (2);
+				controller.removeTrash (gameObject);
 				Destroy (gameObject);
 				//spawnTempRecy.makeAvailable (true);
 			}
 			if (gameObject.name == "recycable_trash_c(Clone)") {
 				player.addTrash (3);
+				controller.removeTrash (gameObject);
 				Destroy (gameObject);
 				//spawnTempRecy.makeAvailable (true);
 			}
 			if (gameObject.tag == "bio_trash") {
 				player.addTrash (0);
+				controller.removeTrash (gameObject);
 				Destroy (gameObject);
 				//spawnTempBio.makeAvailable (true);
 			}	
