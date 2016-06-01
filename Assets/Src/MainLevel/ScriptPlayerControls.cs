@@ -18,6 +18,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 	private float closeCameraDistance = 4.0f;
 	private float deltaTime = 0.0f;
 	private float trashTime = 7.0f;
+	private int overallTrashCollected = 0;
 	private int trashCollectedBio = 0;
 	private int[] trashCollectedRecy = {0,0,0}; // 0 - a , 1 - b , 2 - c
 	private int numOfBuildingCanBuild = 0;
@@ -86,21 +87,32 @@ public class ScriptPlayerControls : MonoBehaviour {
 		AxleInfo front = new AxleInfo ();
 		front.leftWheel = GameObject.Find ("frontLeft").GetComponent<WheelCollider> ();
 		front.rightWheel = GameObject.Find ("frontRight").GetComponent<WheelCollider> ();
-		//front.motor = true;
 		front.steering = true;
+		AxleInfo front2 = new AxleInfo ();
+		front2.leftWheel = GameObject.Find ("frontLeftExtra").GetComponent<WheelCollider> ();
+		front2.rightWheel = GameObject.Find ("frontRightExtra").GetComponent<WheelCollider> ();
+		front2.steering = true;
 		AxleInfo back = new AxleInfo ();
 		back.rightWheel = GameObject.Find ("backRight").GetComponent<WheelCollider> ();
 		back.leftWheel = GameObject.Find ("backLeft").GetComponent<WheelCollider> ();
 		back.motor = true;
+		AxleInfo back2 = new AxleInfo ();
+		back2.rightWheel = GameObject.Find ("backRightExtra").GetComponent<WheelCollider> ();
+		back2.leftWheel = GameObject.Find ("backLeftExtra").GetComponent<WheelCollider> ();
+		back2.motor = true;
 
 		axleInfos.Add (front);
 		axleInfos.Add (back);
+		axleInfos.Add (front2);
+		axleInfos.Add (back2);
 
 
 	}
 		
 	void Update()
 	{
+		if ( Input.GetKeyDown(KeyCode.R) )
+			gameObject.GetComponent<ScriptPlayerControls>().removeResource();
 		if (Input.GetKeyDown (KeyCode.V)) {
 			ScriptSlowMotion slow = GameObject.Find ("Root").GetComponent<ScriptSlowMotion> ();
 			slow.slowMotion (3, true, 0.1f);
@@ -118,11 +130,11 @@ public class ScriptPlayerControls : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.M))
 			hud.SpawnImage ("tutorial_image_1", 10);
 		if (Input.GetKeyDown (KeyCode.P))
-			trashCollectedRecy[0] += 1;
+			gameObject.GetComponent<ScriptPlayerControls>().addTrash(1);
 		if ( Input.GetKeyDown(KeyCode.L))
-			trashCollectedRecy[1] += 1;
+			gameObject.GetComponent<ScriptPlayerControls>().addTrash(2);
 		if ( Input.GetKeyDown(KeyCode.O))
-			trashCollectedRecy[2] += 1;
+			gameObject.GetComponent<ScriptPlayerControls>().addTrash(3);
 
 
 		int nbTouches = Input.touchCount;
@@ -130,11 +142,14 @@ public class ScriptPlayerControls : MonoBehaviour {
 			for (int i = 0; i < nbTouches; i++) {
 				Touch touch = Input.GetTouch (i);
 				TouchPhase phase = touch.phase;
-				if (BottomRegion.Contains (new Vector2 (touch.position.x, touch.position.y ))  && phase == TouchPhase.Began) { // && phase == TouchPhase.Stationary
+				if (BottomRegion.Contains (new Vector2 (touch.position.x, touch.position.y ))  && phase == TouchPhase.Began ) { // && phase == TouchPhase.Stationary
 					lastControlTouch = touch;
 					break;
 				}
 			}
+			//if (lastControlTouch.phase == TouchPhase.Ended)
+				//lastControlTouch = null;
+
 		}
 	}
 
@@ -161,7 +176,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 				controlVector = new Vector2 (lastControlTouch.position.x, lastControlTouch.position.y);
 			else
 				controlVector = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
-			if (BottomRegion.Contains (controlVector) && Input.GetMouseButton(0)) { // && Input.GetMouseButton(0) 
+			if (BottomRegion.Contains (controlVector) ) { // && Input.GetMouseButton(0)  && Input.GetMouseButton(0)
 				smallCircle.transform.position = controlVector;
 				pressedMouse = true;
 				//Debug.Log (BottomRegion.x + "  " + BottomRegion.width / 2+" "+controlVector.y);
@@ -184,7 +199,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 				tempRot = forceRotation;
 				tempSpeed = forceSpeed;
 
-			} else if(Input.GetMouseButtonUp(0) )  { //
+			} else if(Input.GetMouseButtonUp(0) || lastControlTouch.phase == TouchPhase.Ended )  { //
 				smallCircle.transform.position = new Vector3 (BottomRegion.position.x + BottomRegion.width / 2, BottomRegion.position.y + BottomRegion.height / 2, 0);
 				braking = true; 
 				pressedMouse = false;
@@ -278,7 +293,41 @@ public class ScriptPlayerControls : MonoBehaviour {
 		visualWheel.transform.rotation = rotation;
 	}
 
-		
+	public void removeResource()
+	{
+		int random = Random.Range (0, 3);
+		switch (random) {
+		case 0:
+			if (trashCollectedRecy [0] > 0)
+				trashCollectedRecy [0] -= 1;
+			else 
+				goto case 1;
+			break;
+
+		case 1:
+			if (trashCollectedRecy [1] > 0)
+				trashCollectedRecy[1] -= 1;
+			else 
+				goto case 2;
+			break;
+		case 2:
+			if (trashCollectedRecy [2] > 0)
+				trashCollectedRecy[2] -= 1;
+			else 
+				goto case 3;
+			break;
+		case 3:
+			if (overallTrashCollected > 0)
+				goto case 0;
+			Debug.Log ("case 3 , not wanted");
+			break;
+		}
+		if ( overallTrashCollected > 0)
+			overallTrashCollected -= 1;
+		Debug.Log ("trashleft " + overallTrashCollected);
+		ScriptAssignmentController controller = GameObject.Find ("Root").GetComponent<ScriptAssignmentController> ();
+		controller.drawHud ();
+	}
 
 
 	IEnumerator ResumeAgentAfter( float time)
@@ -312,6 +361,7 @@ public class ScriptPlayerControls : MonoBehaviour {
 
 	public void addTrash( int trashtype)
 	{
+		
 		switch (trashtype) {
 		case 0 :
 			trashCollectedBio += 1;
@@ -326,6 +376,10 @@ public class ScriptPlayerControls : MonoBehaviour {
 			trashCollectedRecy[2] +=1;
 			break;
 		}
+		overallTrashCollected += 1;
+		Debug.Log ("overallTrash "+overallTrashCollected);
+		ScriptAssignmentController controller = GameObject.Find ("Root").GetComponent<ScriptAssignmentController> ();
+		controller.drawHud ();
 	}
 
 	public int getRecycablesCollected( int trashNum )

@@ -98,7 +98,7 @@ public class ScriptAssignmentController : MonoBehaviour {
 	void Update () {
 
 
-		drawHud ();
+		//drawHud ();
 
 
 
@@ -124,20 +124,23 @@ public class ScriptAssignmentController : MonoBehaviour {
 		}
 			
 		if (assignmentNr > 0) {
-			area_1.gameObject.GetComponent<Collider>().isTrigger = true;
-			tutorial.setGrayscaledArea (false);
+			//area_1.gameObject.GetComponent<Collider>().isTrigger = true;
+			//tutorial.setGrayscaledArea (false);
 		}
 		if (assignmentNr > 1) {
-			area_2.gameObject.GetComponent<Collider>().isTrigger = true;
-			area_1.setGrayscaledArea (false);
+			//area_2.gameObject.GetComponent<Collider>().isTrigger = true;
+			//area_1.setGrayscaledArea (false);
 		}
 		if (assignmentNr > 2) {
-			area_3.gameObject.GetComponent<Collider>().isTrigger = true;
-			area_2.setGrayscaledArea (false);
+			//area_3.gameObject.GetComponent<Collider>().isTrigger = true;
+			//area_2.setGrayscaledArea (false);
 		}
 				
 		collidingWithAssignmentGiver = false;
-
+		timer_text.text = Mathf.RoundToInt(time_left).ToString ()+" s left";
+		if ( time_left > 0 )
+			time_left -= Time.deltaTime;
+		
 
 	}
 
@@ -216,46 +219,49 @@ public class ScriptAssignmentController : MonoBehaviour {
 		if (trashNr == 3 && player_trash[3] <= assignment[assignmentNr][2] ) {
 			c_trash_images[ player_trash[3] - 1 ].GetComponent<Button>().interactable = true;
 		}
+		if (trashNr == -1 && player_trash[1] > 0 && player_trash[1] <= assignment[assignmentNr][0]) {
+			a_trash_images[ player_trash[1] -1].GetComponent<Button>().interactable = false;
+		}
+		if (trashNr == -2 && player_trash[2] > 0 && player_trash[2] <= assignment[assignmentNr][1] ) {
+			b_trash_images[ player_trash[2] -1].GetComponent<Button>().interactable = false;
+		}
+		if (trashNr == -3 && player_trash[3] > 0 && player_trash[3] <= assignment[assignmentNr][2]) {
+			c_trash_images[ player_trash[3] -1].GetComponent<Button>().interactable = false;
+		}
 	}
 
-	private void drawHud()
+	public void drawHud()
 	{
 		player_trash [0] = player.getRecycablesCollected (0);
 
-		//player_trash [2] = player.getRecycablesCollected (2);
-		//player_trash [3] = player.getRecycablesCollected (3);
-
-
-		//trash_a_text.text = trash_b_text.text = trash_c_text.text = trash_bio_text.text = "";
-		timer_text.text = Mathf.RoundToInt(time_left).ToString ()+" s left";
-		if ( time_left > 0 )
-			time_left -= Time.deltaTime;
-
-		//
-		if (player_trash [1] <= assignment [assignmentNr] [0] && player_trash [1] < player.getRecycablesCollected (1)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+		if ( player_trash [1] < player.getRecycablesCollected (1)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
 			player_trash [1] = player.getRecycablesCollected (1);
 			colorImage (1);
 		}
-		if (player_trash [2] <= assignment [assignmentNr] [1] && player_trash [2] < player.getRecycablesCollected (2)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+		if (player_trash [2] < player.getRecycablesCollected (2)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
 			player_trash [2] = player.getRecycablesCollected (2);
 			colorImage (2);
 		}
-		if (player_trash [3] <= assignment [assignmentNr] [2] && player_trash [3] < player.getRecycablesCollected (3)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+		if ( player_trash [3] < player.getRecycablesCollected (3)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
 			player_trash [3] = player.getRecycablesCollected (3);
 			colorImage (3);
 		}
-		//	
+		if ( player_trash [1] > player.getRecycablesCollected (1)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+			colorImage (-1);
+			player_trash [1] = player.getRecycablesCollected (1);
 
-//		if (assignment [assignmentNr] [0] > 0) {
-//			trash_a_text.text = "Trash A: " + player_trash [1].ToString () + "/" + assignment [assignmentNr] [0].ToString ();
-//		}
-//			
-//		if (assignment [assignmentNr] [1] > 0)
-//			trash_b_text.text = "Trash B: " + player_trash [2].ToString () + "/" + assignment [assignmentNr] [1].ToString ();
-//		if (assignment [assignmentNr] [2] > 0)
-//			trash_c_text.text = "Trash C: " + player_trash [3].ToString () + "/" + assignment [assignmentNr] [2].ToString ();
-		//if (assignment [assignmentNr] [0] > 0)
-		//	trash_bio_text.text = "Bio waste: " + player_trash [0].ToString () + "/" + assignment [3] [0].ToString ();
+		}
+		if (player_trash [2] > player.getRecycablesCollected (2)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+			colorImage (-2);
+			player_trash [2] = player.getRecycablesCollected (2);
+
+		}
+		if ( player_trash [3] > player.getRecycablesCollected (3)) { // if player collected a trash is smaller / same as assignment a trash , and , player collected trash a is smaller than player collected trash in player class
+			colorImage (-3);
+			player_trash [3] = player.getRecycablesCollected (3);
+
+		}
+
 	}
 
 	public void setDeliveringGoods(int giverNum) // 0 - tuto , 1 - area1 , etc.
