@@ -214,7 +214,7 @@ public class ScriptTrigger : MonoBehaviour {
 
     void OnTriggerEnter(Collider collObject)
     {
-        if (collObject.gameObject.tag == "TriggerSphere" && _onCollision)
+        if (_onCollision && collObject.gameObject.tag == "TriggerSphere")
         {
             ActivateTrigger();
         }
