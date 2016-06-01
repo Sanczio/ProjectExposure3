@@ -6,8 +6,29 @@ public class ScriptTrigger : MonoBehaviour {
     
     public enum TriggerType
     {
-        NULL, SpawnPickUp, SpawnCar, ChangeAssigment, SpawnTrash, MoveObject
+        NULL, SpawnPickUp, SpawnCar, SpawnTrash, MoveObject
     }
+
+    public enum CarType
+    {
+        EnemyCar, CivilCar
+    }
+
+    public enum TrashType
+    {
+        A, B, C, D
+    }
+
+    public enum PickUpType
+    {
+        SpeedBoost, Shooting
+    }
+
+    public CarType _carTypeEnum;
+    public PickUpType _pickUpTypeEnum;
+    public TrashType _trashTypeEnum;
+
+
     //public State pickUp = State.boost;
     public TriggerType _triggerTask = TriggerType.NULL;
 
@@ -18,11 +39,16 @@ public class ScriptTrigger : MonoBehaviour {
     public float _activeAfterDelay = 0.0f;
     public bool _isThereNextTrigger;
     public string _nextTrigger;
-    
-    
+    public bool _replayable;
+    public bool _replayableDelay;
+    public float _replayableDelayTime = 0.0f;
+
+    private bool _delayAfterDone = false;
+    private bool _delayAfterActive = false;
+    private float _delayAfterEndTime;
+
     
     private bool _delayGone = false;
-
     private bool _delayActive = false;
     private float _delayEndsTime;
 
@@ -36,8 +62,6 @@ public class ScriptTrigger : MonoBehaviour {
     public bool _patroling;
     public string _carType;
     public string _whereToSpawnCar;
-    [Header("Trigger Assigment")]
-    public string _assigmentNameID;
 
     [Header("Trigger Trash")]
     public string _trashName;
@@ -51,6 +75,9 @@ public class ScriptTrigger : MonoBehaviour {
     public float _timeToSmoothMove = 0.0f;
     [Header("Trigger Effects")]
     private float temp2;
+
+    private bool _triggerAlreadyActivated = false;
+    
 
 
 
@@ -70,65 +97,124 @@ public class ScriptTrigger : MonoBehaviour {
 
     void UpdateTimer()
     {
-        if (_delayActive && _delayEndsTime >= Time.time)
+        //print("Current time: " + Time.time);
+        //print("Delay Time: " + _delayEndsTime);
+        //print("Delay Active: " + _delayActive);
+        if (_delayActive && _delayEndsTime <= Time.time)
+            {
+                _delayGone = true;
+                _delayActive = false;
+                ActivateTrigger();
+            }
+        if (_delayAfterActive && _delayAfterEndTime <= Time.time)
         {
-            _delayGone = true;
-            _delayActive = false;
+            _delayAfterDone = true;
+            _delayAfterActive = false;
         }
+
     }
 
     public void ActivateTrigger()
     {
-        if (_isThereDelay == false || _delayGone)
+        if (_triggerAlreadyActivated != true)
         {
-            ActionTrigger();
-        } else
-        {
-            ActivateDelay();
+            if (_replayableDelay == false || _delayAfterDone)
+            {
+                //print("delayAfterDone");
+                if (_isThereDelay == false || _delayGone)
+                {
+                    //print("ActionTrigger");
+                    ActionTrigger();
+                }
+                else
+                {
+                    //print("ActivateDelay");
+                    ActivateDelay();
+                }
+            }
+            
         }
+    }
 
+    void ActivateDelayAfter()
+    {
+        _delayAfterEndTime = Time.time + _replayableDelayTime;
+        _delayAfterActive = true;
     }
 
     void ActivateDelay()
     {
         _delayEndsTime = Time.time + _activeAfterDelay;
         _delayActive = true;
+        //print("Delay Time: " + _delayEndsTime);
     }
 
 
     //Trigger functions here
     void ActionTrigger()
     {
+        ActivateDelayAfter();
+        if (_replayable != true)
+        {
+            _triggerAlreadyActivated = true;
+        }
         switch (_triggerTask)
         {   
             //SPawn PickUp (call to PickUpSpawner)
             case TriggerType.SpawnPickUp:
-                ScriptPickUpSpawner tempScript = GameObject.Find("Root").GetComponent<ScriptPickUpSpawner>();
-                tempScript.CallPickUpSpawner(_pickUpType, _whereToSpawnPickUp);
+                TriggerTaskSpawnPickUp();
                 break;
             //Spawn Car (call to Car spawner)
             case TriggerType.SpawnCar:
-
+                TriggerTaskSpawnCar();
                 break;
-
-            //Change Assigment
-            case TriggerType.ChangeAssigment:
-
-                break;
-
             case TriggerType.SpawnTrash:
-
+                TriggerTaskSpawnTrash();
                 break;
             case TriggerType.MoveObject:
-
+                TriggerTaskMoveObject();
                 break;
             
         }
+        ActivateNextTrigger();
+    }
+
+    void TriggerTaskSpawnTrash()
+    {
+        ScriptTrashController tempTrashScript = GameObject.Find("Root").GetComponent<ScriptTrashController>();
+        tempTrashScript.spawnTrash(_trashName, _whereToSpawnTrash, _trashType);
+
+    }
+
+
+    void TriggerTaskMoveObject()
+    {
+        GameObject movableObject = GameObject.Find(_movableObjectName);
+        GameObject targetPlace = GameObject.Find(_targetPlace);
+        if (_smoothMoving)
+        {
+            movableObject.transform.position = Vector3.Lerp(movableObject.transform.position, targetPlace.transform.position, Mathf.SmoothStep(0.0f, 1.0f, _timeToSmoothMove));
+        } else
+            {
+            
+            movableObject.transform.position = targetPlace.transform.position;
+            }
+    }
+
+    void TriggerTaskSpawnCar()
+    {
+        //SpawnCar?
+    }
+
+    void TriggerTaskSpawnPickUp()
+    {
+        ScriptPickUpSpawner tempScript = GameObject.Find("Root").GetComponent<ScriptPickUpSpawner>();
+        tempScript.CallPickUpSpawner(_pickUpType, _whereToSpawnPickUp);
     }
 
     void OnTriggerEnter(Collider collObject)
     {
-        if (collObject.gameObject.tag == "Player")
+        if (collObject.gameObject.tag == "TriggerSphere" && _onCollision)
         {
             ActivateTrigger();
         }
@@ -138,8 +224,9 @@ public class ScriptTrigger : MonoBehaviour {
     {
         if (_isThereNextTrigger)
         {
-            ScriptTrigger tempScript = GameObject.Find("_nextTrigger").GetComponent<ScriptTrigger>();
+            ScriptTrigger tempScript = GameObject.Find(_nextTrigger).GetComponent<ScriptTrigger>();
             tempScript.ActivateTrigger();
         }
     }
+
 }

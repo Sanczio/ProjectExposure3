@@ -2,10 +2,10 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
-
+/*
 public enum TriggerType
 {
-    NULL, SpawnPickUp, SpawnCar, ChangeAssigment, SpawnTrash, MoveObject
+    NULL, SpawnPickUp, SpawnCar, SpawnTrash, MoveObject
 }
 
 public enum CarType
@@ -21,23 +21,22 @@ public enum TrashType
 public enum PickUpType
 {
     SpeedBoost, Shooting
-}
+} */
 
 [CustomEditor(typeof(ScriptTrigger))]
 public class CustomInspectorTrigger : Editor
 {
-    public TriggerType _tG;
-    public CarType _carType;
-    public PickUpType _pickUpType;
-    public TrashType _trashType;
+    //public TriggerType _tG;
+    //public CarType _carType;
+    //public PickUpType _pickUpType;
+    //public TrashType _trashType;
 
     public override void OnInspectorGUI()
     {
         ScriptTrigger targetTrigger = (ScriptTrigger)target;
         EditorGUILayout.Space();
-        _tG = (TriggerType)EditorGUILayout.EnumPopup("Trigger type: ", _tG);
-
-        ChangeTriggerType(targetTrigger);
+        targetTrigger._triggerTask = (ScriptTrigger.TriggerType)EditorGUILayout.EnumPopup("Trigger type: ", targetTrigger._triggerTask);
+        //ChangeTriggerType(targetTrigger);
         EditorGUILayout.Space();
 
         //Standart Options for trigger
@@ -56,6 +55,14 @@ public class CustomInspectorTrigger : Editor
         //next trigger
         if (targetTrigger._isThereNextTrigger)
             targetTrigger._nextTrigger = EditorGUILayout.TextField("Next trigger name: ", targetTrigger._nextTrigger);
+        //is this one time or more?
+        targetTrigger._replayable = EditorGUILayout.Toggle("Use more than once ", targetTrigger._replayable);
+        //is there delay between using?
+        if (targetTrigger._replayable)
+            targetTrigger._replayableDelay = EditorGUILayout.Toggle("Delay between using? ", targetTrigger._replayableDelay);
+        //delay between using, in seconds
+        if (targetTrigger._replayableDelay && targetTrigger._replayable)
+            targetTrigger._replayableDelayTime = EditorGUILayout.FloatField("Delay time between using (s): ", targetTrigger._replayableDelayTime);
 
         EditorGUILayout.Space();
         //Show type options
@@ -64,16 +71,14 @@ public class CustomInspectorTrigger : Editor
        //DrawDefaultInspector();
     }
 
-
-
     void ShowTypeOptions(ScriptTrigger targetTrigger)
     {
-        switch (_tG)
+        switch (targetTrigger._triggerTask)
         {
-            case TriggerType.NULL:
+            case ScriptTrigger.TriggerType.NULL:
                 
                 break;
-            case TriggerType.SpawnCar:
+            case ScriptTrigger.TriggerType.SpawnCar:
                 //Options for cars
                 EditorGUILayout.LabelField("Options for Cars", EditorStyles.boldLabel);
                 //Car name
@@ -81,39 +86,36 @@ public class CustomInspectorTrigger : Editor
                 //patroling?
                 targetTrigger._patroling = EditorGUILayout.Toggle("Patroling: ", targetTrigger._patroling);
                 //Car type
-                _carType = (CarType)EditorGUILayout.EnumPopup("CarType: ", _carType);
+                targetTrigger._carTypeEnum = (ScriptTrigger.CarType)EditorGUILayout.EnumPopup("CarType: ", targetTrigger._carTypeEnum);
                 ShowCarType(targetTrigger);
                 //next trigger
                 targetTrigger._whereToSpawnCar = EditorGUILayout.TextField("Where to spawn: ", targetTrigger._whereToSpawnCar);
 
                 break;
-            case TriggerType.SpawnPickUp:
+            case ScriptTrigger.TriggerType.SpawnPickUp:
                 //Options for cars
                 EditorGUILayout.LabelField("Options for PickUp", EditorStyles.boldLabel);
                 //PickUp name
                 targetTrigger._pickUpName = EditorGUILayout.TextField("PickUp name: ", targetTrigger._pickUpName);
                 //PickUp type
-                _pickUpType = (PickUpType)EditorGUILayout.EnumPopup("PickUp type: ", _pickUpType);
+                targetTrigger._pickUpTypeEnum = (ScriptTrigger.PickUpType)EditorGUILayout.EnumPopup("PickUp type: ", targetTrigger._pickUpTypeEnum);
                 ShowPickUpType(targetTrigger);
                 //Where to spawn
                 targetTrigger._whereToSpawnPickUp = EditorGUILayout.TextField("Where to spawn: ", targetTrigger._whereToSpawnPickUp);
                 break;
-            case TriggerType.SpawnTrash:
+            case ScriptTrigger.TriggerType.SpawnTrash:
                 //Options for Trash
                 EditorGUILayout.LabelField("Options for Trash Spawn", EditorStyles.boldLabel);
                 //Trash name
                 targetTrigger._trashName = EditorGUILayout.TextField("Trash name: ", targetTrigger._trashName);
                 //Spawn type
-                _trashType = (TrashType)EditorGUILayout.EnumPopup("Trash type: ", _trashType);
+                targetTrigger._trashTypeEnum = (ScriptTrigger.TrashType)EditorGUILayout.EnumPopup("Trash type: ", targetTrigger._trashTypeEnum);
                 ShowTrashType(targetTrigger);
                 //Spawn name
                 targetTrigger._whereToSpawnTrash = EditorGUILayout.TextField("Spawn name: ", targetTrigger._whereToSpawnTrash);
 
                 break;
-            case TriggerType.ChangeAssigment:
-                
-                break;
-            case TriggerType.MoveObject:
+            case ScriptTrigger.TriggerType.MoveObject:
                 //Options for MovingObject
                 EditorGUILayout.LabelField("Options for Moving Object", EditorStyles.boldLabel);
                 //Movable object name
@@ -131,18 +133,18 @@ public class CustomInspectorTrigger : Editor
 
     void ShowTrashType(ScriptTrigger targetTrigger)
     {
-        switch(_trashType)
+        switch(targetTrigger._trashTypeEnum)
         {
-            case TrashType.A:
+            case ScriptTrigger.TrashType.A:
                 targetTrigger._trashType = "A";
                 break;
-            case TrashType.B:
+            case ScriptTrigger.TrashType.B:
                 targetTrigger._trashType = "B";
                 break;
-            case TrashType.C:
+            case ScriptTrigger.TrashType.C:
                 targetTrigger._trashType = "C";
                 break;
-            case TrashType.D:
+            case ScriptTrigger.TrashType.D:
                 targetTrigger._trashType = "D";
                 break;
 
@@ -151,12 +153,12 @@ public class CustomInspectorTrigger : Editor
 
     void ShowPickUpType(ScriptTrigger targetTrigger)
     {
-        switch (_pickUpType)
+        switch (targetTrigger._pickUpTypeEnum)
         {
-            case PickUpType.SpeedBoost:
+            case ScriptTrigger.PickUpType.SpeedBoost:
                 targetTrigger._pickUpType = "SpeedBoost";
                 break;
-            case PickUpType.Shooting:
+            case ScriptTrigger.PickUpType.Shooting:
                 targetTrigger._pickUpType = "Shooting";
                 break;
         }
@@ -164,12 +166,12 @@ public class CustomInspectorTrigger : Editor
 
     void ShowCarType(ScriptTrigger targetTrigger)
     {
-        switch (_carType)
+        switch (targetTrigger._carTypeEnum)
         {
-            case CarType.CivilCar:
+            case ScriptTrigger.CarType.CivilCar:
                 targetTrigger._carType = "CivilCar";
                 break;
-            case CarType.EnemyCar:
+            case ScriptTrigger.CarType.EnemyCar:
                 targetTrigger._carType = "EnemyCar";
                 break;
         }
@@ -177,24 +179,21 @@ public class CustomInspectorTrigger : Editor
 
     void ChangeTriggerType(ScriptTrigger targetTrigger)
     {
-        switch (_tG)
+        switch (targetTrigger._triggerTask)
         {
-            case TriggerType.NULL:
+            case ScriptTrigger.TriggerType.NULL:
                 targetTrigger._triggerTask = ScriptTrigger.TriggerType.NULL;
                 break;
-            case TriggerType.SpawnCar:
+            case ScriptTrigger.TriggerType.SpawnCar:
                 targetTrigger._triggerTask = ScriptTrigger.TriggerType.SpawnCar;
                 break;
-            case TriggerType.SpawnPickUp:
+            case ScriptTrigger.TriggerType.SpawnPickUp:
                 targetTrigger._triggerTask = ScriptTrigger.TriggerType.SpawnPickUp;
                 break;
-            case TriggerType.SpawnTrash:
+            case ScriptTrigger.TriggerType.SpawnTrash:
                 targetTrigger._triggerTask = ScriptTrigger.TriggerType.SpawnTrash;
                 break;
-            case TriggerType.ChangeAssigment:
-                targetTrigger._triggerTask = ScriptTrigger.TriggerType.ChangeAssigment;
-                break;
-            case TriggerType.MoveObject:
+            case ScriptTrigger.TriggerType.MoveObject:
                 targetTrigger._triggerTask = ScriptTrigger.TriggerType.MoveObject;
                 break;
         }
