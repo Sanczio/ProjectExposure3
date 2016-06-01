@@ -53,14 +53,15 @@ public class ScriptPlayerControls : MonoBehaviour {
 	private bool braking;
 	private bool boost = false;
 
-	WheelCollider WheelL ;
-	WheelCollider WheelR ;
-	float AntiRoll = 80000.0f;
+
+	private float AntiRoll = 80000.0f;
+	private float AntiRollOver = 10000.0f;
 	//Touch
 	private Touch lastControlTouch;
 	private Touch lastScreenTouch;
 
 	void Start () {
+		GameObject.Find ("Main Camera").AddComponent<ScriptCameraControl> ();
 		playerRigidbody = GetComponent<Rigidbody> ();
 		GetComponent<Rigidbody>().centerOfMass = centerOfMassCorrection;
 		smallCircle = GameObject.Find ("smallCircle");
@@ -269,8 +270,8 @@ public class ScriptPlayerControls : MonoBehaviour {
 				if (groundedR)
 					playerRigidbody.AddForceAtPosition(axleInfo.rightWheel.transform.up * antiRollForce, axleInfo.rightWheel.transform.position); 
 				if ( groundedL == false && groundedR == false) {
-					playerRigidbody.AddForceAtPosition(axleInfo.leftWheel.transform.up * -100000, axleInfo.leftWheel.transform.position); 
-					playerRigidbody.AddForceAtPosition(axleInfo.rightWheel.transform.up * -100000, axleInfo.rightWheel.transform.position); 
+					playerRigidbody.AddForceAtPosition(axleInfo.leftWheel.transform.up * -AntiRollOver, axleInfo.leftWheel.transform.position); 
+					playerRigidbody.AddForceAtPosition(axleInfo.rightWheel.transform.up * -AntiRollOver, axleInfo.rightWheel.transform.position); 
 				}
 				/////////////////
 			}
